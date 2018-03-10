@@ -31,13 +31,30 @@
             <p class="font-weight-bold">02. Interface Definition Language (IDL):</p>
             <p>An IDL is a construct that helps open systems by defining the contract of the open system. The IDL defines an interface; input, output, return values, methods, data streams, and data types. IDLs allow contributing parties to the open system to remain free from implementation restrictions. IDLs are so carefully defined that they can be checked for syntax violations, as well as produce helper code such as client stubs and server skeletons. However, this helper code is a nice to have, a side effect of the contract. The whole point of an IDL is the agreement between the contributing parties on what the system will consume and produce. Any language, platform, architecture, etc. can be used in the open system, as long as the contract of the system (IDL) is respected. </p>
 
-            <p class="font-weight-bold">03. Graphene device:</p>
-            <p>Get the brain waves out to control devices.</p>
+            <p class="font-weight-bold">03. Inter process communication (IPC):</p>
+            <p>A process is how a computer assigns and performs work to be done. There are many processes running simultaneously on any given system. These processes often need to talk to each other to perform their jobs. They communicate by sending messages, defined as inter process communication (IPC). IPC is an easy feat on a local system as a shared memory block can be allocated for them to pass messages, variables, parameters, etc. between each other. IPC becomes tricky when we need processes of the same distributed system to communicate even though they may be running on different local machines. There is no global shared memory for them to use, so the processes must send messages across the network. Sending messages over the network leads to a compromise between performance and reliability.</p>
 
+            <p class="font-weight-bold">04. Architectural Styles:</p>
+            <p>There are a handful architectural styles to consider, including layered based, object based, data centered, and event based.</p>
+            <p>With layered based architecture, events are pushed through various layers of the system. The typical layers involved are the user-interface, processing, and the data layers. We publish events down through layers of the system and responses flow back up.</p>
+            <p>When we talk about object based events in distributed systems, they are really only there to protect data. Using objects over a network is just like making method calls that include a port number and an IP address.</p>
+            <p>Event-based architecture can be boiled down to the notion that there are two types of event busses. You can publish to an event bus or you can consume from an event bus. Publishers publish events to the system and we rely on middleware to coordinate those events such that only the subscribed processes receive the published events. The key to remember is that the processes in event based architecture are referentially decoupled. The even bus acts as the middleware, and it handles getting the data to the correct consumer. The publisher and the consumer do not need to know about each other, the bus handles those details.</p>
+            <p>Data-centered architectures requires that data shared in a persistent state. Persistent busses are much harder to implement, but with that difficulty comes higher performance. Data-centered architectures user temporal decoupling otherwise stated as the process are time independent of each other because the data is persistent. This concept relies on middle ware to coordinate message delivery between processes, however, the consumer processes can be in any state when an event is published because the middleware will ensure that subscribed processes will receive the message once they are available to do so. Again this is possible because of data persistence.</p>
 
-            <p class="font-weight-bold">04. :</p>
-            <p class="font-weight-bold">05. :</p>
-            <p class="font-weight-bold">06. :</p>
+            <p class="font-weight-bold">05. Multi-tiered architectures:</p>
+            <p>Multi-tiered architectures involve client and server machines and how we distribute a code base between them. The simplest form is to have clients with code to drive only the user interface, with all other parts of the application living on the server. There are two extremes to this approach, thick and thin, and often the best solution is somewhere in between.</p>
+            <p>The majority of code lives client side with thin clients, whereas the majority of code lives server side with thin clients. Both have pros and cons, so again you have to find a balance for each application. To simply the comparison we will look at pros and cons of heavy clients and heavy servers.</p>
+            <p>Heavy clients result in less network traffic, which means they are often snappier and are more secure from data interception / snooping. The computational requirements for the application are shifted to the client and we can offload data security and liability to the client. Heavy clients result in the code base being distributed to many devices which can lead to offline push problems. In other words, it becomes very difficult to ensure that the code base remains up-to-date and secure as not all devices will be online all the time to receive updates.</p>
+            <p>Heavy servers result in code bases that are easier to maintain because the code resides at home base, not spread out across the distributed system. They are often simpler because the bulk of the code is centrally located. We also can benefit from increased security, again because of centrally located code. Heavy clients suffer when it comes to computationally expensive code as the server provides the bulk of the processing power and we need to send and receive all of that data between the server and the clients. Finally, if we are working with sensitive data, we have to concern ourselves with protecting that data server side and assume the liabilities associated with storing such data.</p>
+
+            <p class="font-weight-bold">06. Data marshalling:</p>
+            <p>Data marshalling is extremely valuable as it allows many different platforms to talk to each other regardless of architecture. Marshalling also makes debugging systems cheap, easy, and fast. The first step in marshalling data is converting program data that is stored in memory from random access data to serialized data that can then be sent bit by bit over a network.</p>
+            <p>Marshalling requires work from the programmer as automation is next to impossible considering that there are a lot of different computer architectures, different ways of encoding integers (big-endian and littler endian), different floating point accuracies, and different character encodings. Complex data structures are also difficult to marshal without programmer intervention. It is bad to ask simple algorithms to understand dynamic data structures like random access cyclically linked lists – what happens when the points in the list change? Without programmer intervention, bad things, that is what happens with automated marshalling.</p>
+            <p>If marshalling takes work, then why bother? Again, it makes data available to all types of systems in a distributed system. Data that has been marshalled and then serialized into bits, is extremely easy to send over a network. On the other side, once the data has been unmarshalled, it can be integrated into whatever platform the receiving end is running on. Finally marshaled data is very easy to debug in transit. For example, if examining a packet, what is easier for the human programmer to identify?</p>
+            <li>Non marshalled integer: 0000000101000011</li>
+            <li>Marshalled integer: &lt;Integer&gt;0323&lt;Integer&gt;</li>
+            <p></p>
+
             <p class="font-weight-bold">07. :</p>
             <p class="font-weight-bold">08. :</p>
             <p class="font-weight-bold">09. :</p>
@@ -86,6 +103,61 @@
             <p>Synchronous vs Asynchronous: Synchronous are easy on a local system. If a client blocks on an open system that leads to trouble. Blocking calls are synchronous, meaning the caller and the called wait for each other to complete their tasks. If a client is blocked we cannot tell if the server blew up, so we should use an asynchronous call. In an asynchronous, the caller does not wait for the called to respond, it continues down its path. Asynchronous calls often require more complex logic.</p>
             <p>Latency is the amount of time for an empty packet to get from here to there.</p>
             <p>In transactions there is a before, and after, and nothing in between. To define that more concretely, think of the example provided where a user books a hotel, flight, and car rental. All three bookings are first not booked, then they are all booked. The transaction fails if only the hotel is booked.</p>
+
+            <h4>Lecture 03</h4>
+            <p>In distributed systems we do not have shared memory. Inter process communication (IPC) is a piece of cake on a local system because you can just allocate a block of memory to be shared between the two processes. On a distributed system, things get trickier because there is no shared memory. So how do you accomplish IPC in a distributed system? You send a message.</p>
+            <p>Context switching is the action of giving each process a turn on the CPU. The operating system will try to balance everything out and give each process a fair share of time. A process will execute a handful of instructions, then it is place on hold while the next process is loaded into the registers. The operating system can do a context switch at any time.</p>
+            <p>Atomic action is a unit that cannot be broken down to smaller parts that still makes sense. Generally we want to complete an atomic action before a context switch.</p>
+            <p>Critical sections are blocks of code that cannot be interrupted by a context switch.</p>
+            <p>Semaphores are the gatekeepers of context switching. If they report true, that indicates that a critical process is in action and that a context switch should not happen. This is the basis of the Test and set principle. Test is when you look at the semaphore. If true, do something else or wait, if false, then proceed into the context switch. Once a critical section is loaded in to the CPU, set the semaphore to true to prevent interruption.</p>
+            <p>Shared memory in a distributed system. If it were practical to implement, distributed shared memory would solve a lot of problems. To implement, you could set up a large block of memory, assign all machines a range of universally unique identifier (UUID), and then they could all talk to each other with the theoretical ease of processes running on a local system. The pitfalls of this concept are:</p>
+            <li>Buggy and slow</li>
+            <li>Still have to do work to implement IPC</li>
+            <li>Not at all efficient</li>
+            <li>A lot of overhead to make sure programs are running in a coordinated manner (predict how they will run)</li>
+            <p></p>
+            <p>There are two main types of messaging protocols, Transmission Control Protocol/Internet Protocol (TCP/IP) and Universal Datagram Protocol (UDP). TCP/IP is much more reliable, as it involves sending bursts of packets and waiting for them to be acknowledged as received on the other end, and the re-sending lost packets as needed. UDP can be faster because you send and forget.</p>
+            <p>Messages are essential to open systems. They allow all of the process and moving bits to communicate. The following problems are common when working with messages in distributed computing:</p>
+            <li>Receiving buffers fill up and the sender can no longer wait, so the message is sent anyway and lost in transit</li>
+            <li>Messages and acknowledgments are lost in transit</li>
+            <li>Messages do not arrive on time or in the wrong order</li>
+            <li>Processes do not communicate what they are doing</li>
+            <li>Both the sender and the receiver need to remain active during messaging</li>
+            <p></p>
+            <p>Message Oriented Middleware (MOM) is a solution to some of the messaging problems. We off load the burden of coordinating messages onto a middleware layer. There is a loss of control when using a MOM. For example, you may send a message, and not know if it was lost because the MOM is storing the message until the receiver is available to receive it.</p>
+
+            <h4>Lecture 04</h4>
+            <p>Revisiting UDP and TCP/IP. Remember the common theme that there is always a trade off or compromise and you must evaluate the needs of the system when choosing how to send messages. UDP is fast but suffers from data loss. TCP/IP is slow but very reliable. There are several levels of compromise between the two protocols if needed.</p>
+            <p>HTTP and TCP. Why was HTTP slapped on top of TCP? Because TCP was already there and can transfer any kind of data in packets. We do not need to worry if our HTTP packets will arrive, that is TCPs job.</p>
+            <p>Revisiting problems with messages: They can get lost, buffers fill up, acknowledgments can get lost, messages can be delayed in delivery or they can arrive in the wrong order. In certain systems it gets tricky to coordinate messages as the cross each other in transit over the network.</p>
+            <p>Producer and consumer coordination. The producer writes or sends until it catches the consumer and the consumer reads or receives until it catches the producer. Think about this like two processes working on the same array or block of sequential memory. When either hits the end of the array, they loop back to the beginning. When either process catches the other, it blocks, until the other process has moved further down the circular memory structure. Put in concrete form, when the consumer catches the producer, it blocks waiting.</p>
+            <p>Healthcare and distributed systems – Important points to consider when evaluating where to make the compromise:</p>
+            <li>Where to store data, server or client side? Server side comes with security and liability risks. Client side comes with implementation and data availability issues</li>
+            <li>Stability of the system and making sure it can transmit crucial information precisely when it needs to be transferred</li>
+            <p></p>
+            <p>Data-centric intelligent databases have two key concepts to study:</p>
+            <li>Modus ponens states that when we know A implies B, and A is true, the B is also true</li>
+            <li>Resolution states that when we know X or Y is true, and we also know that either Y is not true or Z is true, then we can deduce that either X or Z is true</li>
+            <p></p>
+            <p>MIME types are used to let different consumers know what kind of data to expect.</p>
+            <p>Attribute value pairs are simply the name of something and its value.</p>
+
+            <h4>Lecture 05</h4>
+            <p>Multi-tiered architectures refer to the client server relationship and how we distribute an application between them. The client will house the user interface which makes request operations to the application server which then makes a request operation to the database server. The database server returns the requested data, and then the application server will execute its operations on the data and return the result to the client. There is a waiting step between each step, and we again have to consider the core concept of comprise with developing these systems. Careful attention must be paid when deciding how to organize an application in regards to thick or thin clients / thin or thick servers.</p>
+            <p>There are two types of operations:</p>
+            <li>Idempotent: Return the account balance – this operation can be repeated many times if the message is lost or delayed. The worst that will happen is the account balance is returned twice.</li>
+            <li>Execute only once: Transfer $323k from account B to account C. If the message is lost and a new message is sent, it becomes a big deal if/when they are both received as the transaction should only be executed once.</li>
+            <p></p>
+            <p>Processes are expensive but independent. Threads are cheap but they share resources. If a thread goes down, it takes its friends with it, often crashing the system. Processes do not impact each other so we can lose a processes without losing the system.</p>
+            <p>Kernel space is where we execute system instructions. User space is where we execute general instructions.</p>
+            <p>An X windows system is a dynamic system where the server can become the client and the client can become the server.</p>
+            <p>Deamons are autonomous processes running in the background – think of the voice in your head that reminds to you mail that letter when you get home.</p>
+            <p>Super servers are able to determine when there is a need for more resources or triage task specific resources. A super server is able to start up servers on demand and shut them down when they are not needed.</p>
+            <p>Code migration and mobility. Weak mobility is when you ship all code to a new machine and start it from the beginning. Weak mobility is easy to implement and has a fast start up time. Strong mobility is when you ship an operation across the network while it is still running. Strong mobility requires the packaging and running processes, data structures, etc. sending to the new machine, and starting the process where we left off form the old machine, very hard to implement but very important for critical operations – think space flight and transferring to a new system from a failing system.</p>
+            <p>Synchronous and Asynchronous calls are fundamental parts of distributed systems. With a synchronous call we make a call from the client and then wait for the response. With asynchronous calls, the client makes a call and carries on. This can lead to more efficient systems but requires more careful planning and implementation. A balance can be found by making an asynchronous call and then waiting for a short while before moving on to other tasks. This compromise accounts for slight delays in network traffic before moving on to other tasks.</p>
+            <p>What do we need to uniquely identify a packet? The local port and IP address and the remote port and IP address.</p>
+
+
 
         </div>
 
